@@ -65,7 +65,7 @@ object HdfsTest {
     /**
       * 1.用Spark计算投注前十名的用户
       */
-    val df2 = spark.sql("select name,betAmount from person order by betAmount limit 10")
+    val df2 = spark.sql("select name,sum(validBetAmount) as validBetAmountSum  from person group by name order by validBetAmountSum desc limit 10")
     df2.show()
 
 
@@ -73,13 +73,13 @@ object HdfsTest {
       * 2.每个用户的有效投注
       */
 
-    val df3 = spark.sql("select name,validBetAmount from person ")
+    val df3 = spark.sql("select name,sum(validBetAmount) as validBetAmountSum  from person group by name")
     df3.show()
 
     /**
       * 3.每个用户的输赢
       */
-    val df4 = spark.sql("select name,netAmount  from person ")
+    val df4 = spark.sql("select name,sum(netAmount) as netAmountSum  from person group by name ")
     df4.show()
 
 
