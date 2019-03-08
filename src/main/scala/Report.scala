@@ -34,15 +34,15 @@ object Report {
       .add("regTime", StringType)
       .add("isReg", IntegerType)
       .add("isFirstCharge", IntegerType)
-      .add("firstChargeMoney", FloatType)
+      .add("firstChargeMoney", DoubleType)
       .add("isFirstBetToday", IntegerType)
-      .add("betAmount", FloatType)
-      .add("validBetAmount", FloatType)
+      .add("betAmount", DoubleType)
+      .add("validBetAmount", DoubleType)
       .add("netMoney", FloatType)
       .add("isFirstChargeToday", IntegerType)
-      .add("Charge", FloatType)
-      .add("isOutMoneyToday", FloatType)
-      .add("OutMoney", FloatType)
+      .add("Charge", DoubleType)
+      .add("isOutMoneyToday", IntegerType)
+      .add("OutMoney", DoubleType)
       .add("api_name", StringType)
       .add("ip", StringType)
       .add("redBet", StringType)
@@ -107,17 +107,17 @@ object Report {
 
     val x = df.groupBy(df.col("creatTime").toString().split(" ")(0)).agg(
       //注册数
-      sum(df.col("isReg")),
+      sum(df.col("isReg")).as("test01"),
       //首存人数
       sum(df.col("isFirstCharge")),
       //转换率
-      sum(df.col("isFirstCharge")).cast("double")/sum(df.col("isReg")),
+      (sum(df.col("isFirstCharge")).cast("double")/sum(df.col("isReg"))).as("test02"),
       //首存额
       sum(df.col("firstChargeMoney")),
-      //人均首存
+      //人均首存cast
       sum(df.col("firstChargeMoney"))/sum(df.col("isFirstCharge")),
       //存款人数
-      sum(df.col("isFirstBetToday")),
+      sum(df.col("isFirstCharge")),
       //取款人数
       sum(df.col("isOutMoneyToday")),
       //存款额
@@ -146,6 +146,7 @@ object Report {
       sum(df.col("netMoney")*(-1))-sum(df.col("redBet"))-sum(df.col("backBet"))-sum(df.col("preferential"))
     )
 
+//    val x1 = x.na.fill(0.00)
     val query = x.writeStream.format("console").outputMode("complete").start()
     query.awaitTermination()
   }
